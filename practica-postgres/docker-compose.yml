@@ -1,37 +1,46 @@
-
 services:
-  postgres:
-    image: postgres:17
-    container_name: postgres-prueba
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: ClaseDB2026!
-      POSTGRES_DB: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - datos_postgres:/var/lib/postgresql/data
-      - ./datos:/datos 
-    networks:
-      - red-bbdd
-    restart: unless-stopped
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: pgadmin-prueba
-    environment:
-      PGADMIN_DEFAULT_EMAIL: alumno@clase.com
-      PGADMIN_DEFAULT_PASSWORD: AdminClase2026!
+  jupyter:
+    image: jupyter/datascience-notebook
+    container_name: smarttour-jupyter
     ports:
-      - "5050:80"
+      - "8888:8888"
+    volumes:
+      - ./:/home/jovyan/smarttour
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    command:
+      start-notebook.sh
+      --NotebookApp.token=''
     depends_on:
       - postgres
-    networks:
-      - red-bbdd
-    restart: unless-stopped
+
+  postgres:
+    image: postgres:17
+    container_name: smarttour-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: smarttour
+      POSTGRES_PASSWORD: smarttour123
+      POSTGRES_DB: smarttour_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./:/smarttour
+      - ../datasets:/datasets:ro
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: smarttour-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@smarttour.com
+      PGADMIN_DEFAULT_PASSWORD: smarttour
+    ports:
+      - "5050:80"
+    volumes:
+      - ./:/smarttour
+    depends_on:
+      - postgres
 
 volumes:
-  datos_postgres:
-
-networks:
-  red-bbdd:
+  postgres_data:
