@@ -27,6 +27,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./:/smarttour
+      - ./datos:/datos:ro
       - ../datasets:/datasets:ro
 
   pgadmin:
